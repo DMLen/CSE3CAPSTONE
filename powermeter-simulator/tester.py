@@ -22,7 +22,6 @@ print("Status: " + virtualmeter.get_status())
 #if get_powerDifference returns a negative integer, power is in defecit to the household. we are using more power than we are producing and having to import from the grid (we want to avoid this)
 #if a positive integer, power is in surplus and is being exported to the grid. we are producing more power than we are using
 
-
 print("\nRedefining values so we are in a power defecit")
 
 #using setter methods to change the simulated meter object. these exist for testing purposes.
@@ -37,7 +36,7 @@ print("Status: " + virtualmeter.get_status() )
 
 #demonstration of power randomization:
 #we can use threading to randomly change the variables of virtualmeter object every 10 seconds
-#this is intended for testing other software relying on the power readings
+#this is intended for testing other software components relying on the power readings
 #something like this would also be useful for testing software components that require a collected history of power readings
 
 #arguments for randomization
@@ -50,10 +49,11 @@ minProductionLimit = 0
 randomizerPeriod = 10 #seconds between randomization
 randomizerAmount = 100 #how many times should we randomize
 
-
+#the code in randomizer() will be run every x seconds (from time.sleep function with randomizerPeriod as arg) 
+#it will run y amount of times (from randomizerAmount)
 def randomizer():
     for i in range(randomizerAmount):
-        val = randint(minProductionLimit, maxProductionLimit)
+        val = randint(minProductionLimit, maxProductionLimit) #generate a random integer between these two limits
         virtualmeter.set_pvPower(val)
 
         val = randint(minConsumptionLimit, maxConsumptionLimit)
@@ -66,7 +66,7 @@ def randomizer():
         print("Status: " + virtualmeter.get_status())
         time.sleep(randomizerPeriod)
 
-#create thread and then start thread
+#create thread with target as randomizer() and then start thread
 randomizerThread = threading.Thread(target=randomizer)
 randomizerThread.start()
 
