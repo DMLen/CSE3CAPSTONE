@@ -28,3 +28,10 @@ class SimulatedConsumerMeter:
              return "defecit"
         else:
              return "surplus"
+    
+    #print out relevant information about the powerbox in its current state
+    def print_readout(self):
+        print("Current consumption: " + str(self.powerConsumption) )
+        print("Current PV power: " + str(self.pvPower) )
+        print("Current surplus/defecit: " + str(self.get_powerDifference()) )
+        print("Status: " + self.get_status())
