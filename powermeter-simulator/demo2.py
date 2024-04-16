@@ -20,21 +20,20 @@ virtualmeter.print_readout()
 #power production is 0 at the morning, and increases in a curved fashion as a function of time. it peaks at midday, and is zero at sunset and through the night.
 #this is very similar to demo1.py with randomization
 
-maximumPower = 5000
-randomizerPeriod = 10 #how long in second between repetitions
+maximumPower = 5000 #what is the maximum output of the solar array? in watts
+randomizerPeriod = 10 #how long in second between polling repetitions
 
 #following codesnippet is from Voy at stackoverflow
 cycles = 2 #how many sine cycles or "days" do we want?
-resolution = 25 #how many data points should we generate?
+resolution = 25 #how many data points should we generate for the cycles? this also acts as an iterator count for the randomizer
 
+#this produces an array of integers based on a sine function.
 length = np.pi * 2 * cycles
 sine_wave = np.sin(np.arange(0, length, length / resolution))
 print("\nSine func points: ")
-print(sine_wave)
+print(sine_wave) #0, 0.481, 0.844, 0.998, 0.904, etc etc...
 
-#this produces an array of integers based on a sine function.
-#0, 0.481, 0.844, 0.998, 0.904, etc etc...
-#all negative numbers will be set to zero so this acts as a list of multiplicative factors
+#creating a new list of sine values where all negatives are nill (so we can properly calculate power output)
 sunlight_factor = []
 
 for i in sine_wave:
@@ -43,6 +42,7 @@ for i in sine_wave:
     else:
         sunlight_factor.append(0)
 
+#note: the sunlight factors will include zeroes. this is intentional! we chopped off the bottom half of the sine curve so it represents sunlight levels throughout a 24 hour period.
 print("\nSunlight factors: ")
 print(sunlight_factor)
 
@@ -52,29 +52,13 @@ def randomizer():
         power_value = maximumPower * sunlight_factor[i]
         virtualmeter.set_pvPower(power_value)
         
-        print("\nRandomized values (solar sine variance): Taking reading " + str(i) + " of " + str(resolution) + " (polling every " + str(randomizerPeriod) + " seconds)")
+        print("\nSine wave solar variance: Taking reading " + str(i) + " of " + str(resolution) + " (polling every " + str(randomizerPeriod) + " seconds)")
         virtualmeter.print_readout()
-        print("Power production reduced from " + str(maximumPower) + " to " + str(virtualmeter.get_pvPower()) + " based on a sunlight factor of " + str(sunlight_factor[i]) )
+        print("Power production reduced from a possible maximum of " + str(maximumPower) + " to " + str(virtualmeter.get_pvPower()) + " based on a current sunlight factor of " + str(sunlight_factor[i]) )
         time.sleep(randomizerPeriod)
 
-randomizer()
-        
-
-
-
-
-
-
-
-
-
-
-
-#create thread with target as randomizer() and then start thread
-#randomizerThread = threading.Thread(target=randomizer)
-#randomizerThread.start()
-
-
+randomizerThread = threading.Thread(target=randomizer)
+randomizerThread.start()
 
 
 
