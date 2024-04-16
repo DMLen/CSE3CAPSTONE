@@ -1,0 +1,2 @@
+pip install numpy #for demo2.py sine wave solar randomizer
+pip install git+https://github.com/almottier/TapoP100.git@main #for plug_controller.py with tapo cloud api
