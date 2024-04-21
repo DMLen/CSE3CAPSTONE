@@ -1,9 +1,10 @@
 #USING THE LIBRARY FROM THIS BEAUTIFUL BEAUTIFUL MAN
 #https://github.com/almottier/TapoP100
 
+from credentials import *
 from PyP100 import PyP110
 
-p110 = PyP110.P110("192.168.43.11", "21240797@students.latrobe.edu.au", "3x9gz872")
+p110 = PyP110.P110(plug1_IP, account_EMAIL, account_PASSWORD)
 
 # The P110 has all the same basic functions as the plugs and additionally allow for energy monitoring.
 print("Turning on plug...")
