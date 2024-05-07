@@ -1,3 +1,5 @@
+import json
+
 class Device:
     def __init__(self, name, priority, plug_status, energy):
         self.name = name
@@ -37,6 +39,15 @@ class MonitoringSystem:
         for device in self.devices.values():
             print(f"Name: {device.name}, Priority: {device.priority}, Plug Status: {device.plug_status}, Energy Consumption: {device.energy} watts")
 
+    def return_list(self):
+        return self.devices.values()
+
+def json_export(list, file):
+    f = open(file, "w")
+    for device in list:
+        jsondata = json.dumps(device.__dict__)
+        print("Device Object" + jsondata)
+        f.write(jsondata + "\n")
 
 # Example usage
 if __name__ == "__main__":
@@ -48,6 +59,7 @@ if __name__ == "__main__":
         print("3. Turn On/Off Plug")
         print("4. List Devices")
         print("5. Exit")
+        print("6. Export data to JSON")
 
         choice = input("Enter your choice: ")
 
@@ -68,5 +80,10 @@ if __name__ == "__main__":
         elif choice == "5":
             print("Exiting...")
             break
+        elif choice == "6":
+            print("Export data to JSON...")
+            filename = "exported_devices.json"
+            json_export( monitoring_system.return_list(), filename)
+
         else:
             print("Invalid choice. Please try again.")
