@@ -1,4 +1,5 @@
 import json
+import os
 
 class Device:
     def __init__(self, name, priority, plug_status, energy):
@@ -43,11 +44,43 @@ class MonitoringSystem:
         return self.devices.values()
 
 def json_export(list, file):
-    f = open(file, "w")
-    for device in list:
-        jsondata = json.dumps(device.__dict__)
-        print("Device Object" + jsondata)
-        f.write(jsondata + "\n")
+    if not os.path.exists(file): #check file doesnt already exist first to prevent accidental overwrite
+        f = open(file, "w")
+        for device in list:
+            jsondata = json.dumps(device.__dict__) #convert each object into a json dictionary
+            print("Device Object" + jsondata)
+            f.write(jsondata + "\n") #write each object to a newline in json
+        f.close()
+        print("Export complete! Please find saved data at " + file)
+
+    else: #this runs if the first condition (file not already existing) fails
+        print("File already exists!")
+        x = input("Do you wish to overwrite? (y to overwrite, n to cancel operation): ")
+        if x == ("y"):
+            print("Overwriting json!")
+
+            #this is the same write code as above, but it is only called to overwrite whatever is already in file!
+            f = open(file, "w")
+            for device in list:
+                jsondata = json.dumps(device.__dict__) #convert each object into a json dictionary
+                print("Device Object" + jsondata)
+                f.write(jsondata + "\n") #write each object to a newline in json
+            f.close()
+            print("Export complete! Please find saved data at " + file)
+
+        elif x == ("n"):
+            print("Cancelling operation!")
+            pass
+    
+        else:
+            print("Invalid input! Cancelling operation!")
+            pass
+
+def json_import(file):
+    f = open(file, "r")
+    #read file contents line by line
+    #instantiate device objects based on json dict contents
+    #use add_device func for instantiation into the energy monitoring system
 
 # Example usage
 if __name__ == "__main__":
