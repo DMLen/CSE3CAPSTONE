@@ -161,3 +161,7 @@ cython_debug/
 
 # Project credentials file
 credentials.py
+
+# Default exported json file
+# These are just sample devices. no point constantly overwriting them with production devices as github isnt a place for hosting persistent data.
+exported_devices.json
