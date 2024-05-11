@@ -11,10 +11,14 @@ class Device:
     def __str__(self):
         #object print method
         return f"This device's name is '{self.name}'. The current priority is '{self.priority}', the plug status is currently '{self.plug_status}', and the current energy consumption is '{self.energy}'."
+    
+    def __repr__(self):
+        #more readable representation method (for json import)
+        return f"Device object '{self.name}' at {hex(id(self))}"
 
 class MonitoringSystem:
     def __init__(self):
-        self.devices = {}
+        self.devices = {} #wouldnt it be better for this to be a list populated with objects of the Device class we just specified, instead of a dictionary?
 
     def add_device(self, name, priority):
         if name in self.devices:
@@ -71,18 +75,14 @@ def json_export(list, file):
                 f.write(jsondata + "\n") #write each object to a newline in json
             f.close()
             print("Export complete! Please find saved data at " + file)
-
-        elif x == ("n"):
-            print("Cancelling operation!")
-            pass
     
         else:
-            print("Invalid input! Cancelling operation!")
+            print("Cancelling operation!")
             pass
 
 def json_parse(file):
     if not os.path.exists(file):
-        print("File doesn't exist! Cancelling operation!")
+        print("File doesn't exist! Cancelling operation!") #prevent errors if a json file doesnt exist at provided directory
     else:
         device_list = []
         print("Parsing device objects from json data!")
@@ -91,15 +91,15 @@ def json_parse(file):
         lines = f.readlines()
         for line in lines: #read file contents line by line
             print("Instantiating object " + str(counter) )
-            device_dictionary = json.loads(line)
+            device_dictionary = json.loads(line) #may cause crashes if the json isn't structured appropriately, untested. device_dictionary holds current line contents.
             print( str(device_dictionary) )
 
             #instantiate device objects based on json dict contents
             name = 'device_{}'.format(counter) 
-            name = Device(**device_dictionary) #instantiate each device with a unique name
-            print(name) #print object
+            name = Device(**device_dictionary) #instantiate each json dictionary as device argument. multiple parameters are passed at once. it just works
+            print(name) #print object to verify attributes are set correctly
 
-            device_list.append(name)
+            device_list.append(name) #append device object to the return list
             counter += 1
 
 
@@ -140,13 +140,13 @@ if __name__ == "__main__":
             break
         elif choice == "6":
             print("Export data to JSON...")
-            filename = "exported_devices.json"
+            filename = "exported_devices.json" #changing filename here changes the destination of export data
             json_export( monitoring_system.return_list(), filename)
         elif choice == "7":
             print("Import data from JSON...")
-            filename = "exported_devices.json"
+            filename = "exported_devices.json" #changing filename here changes the target of import data
             devicelist = json_parse(filename) #this function returns a dictionary of device objects created from json data
-            print("Parsed objects: " + str(devicelist) )
+            print("Parsed objects: " + str(devicelist) ) #verify that returned objects are correct
 
             for device in devicelist:
                 monitoring_system.devices[device.name] = Device(device.name, device.priority, device.plug_status, device.energy) #add new entry to the monitored device list as dictionary entries
