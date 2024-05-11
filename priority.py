@@ -8,6 +8,10 @@ class Device:
         self.plug_status = plug_status
         self.energy = energy
 
+    def __str__(self):
+        #object print method
+        return f"This device's name is '{self.name}'. The current priority is '{self.priority}', the plug status is currently '{self.plug_status}', and the current energy consumption is '{self.energy}'."
+
 class MonitoringSystem:
     def __init__(self):
         self.devices = {}
@@ -76,11 +80,31 @@ def json_export(list, file):
             print("Invalid input! Cancelling operation!")
             pass
 
-def json_import(file):
-    f = open(file, "r")
-    #read file contents line by line
-    #instantiate device objects based on json dict contents
-    #use add_device func for instantiation into the energy monitoring system
+def json_parse(file):
+    if not os.path.exists(file):
+        print("File doesn't exist! Cancelling operation!")
+    else:
+        device_list = []
+        print("Parsing device objects from json data!")
+        counter = 0
+        f = open(file, "r")
+        lines = f.readlines()
+        for line in lines: #read file contents line by line
+            print("Instantiating object " + str(counter) )
+            device_dictionary = json.loads(line)
+            print( str(device_dictionary) )
+
+            #instantiate device objects based on json dict contents
+            name = 'device_{}'.format(counter) 
+            name = Device(**device_dictionary) #instantiate each device with a unique name
+            print(name) #print object
+
+            device_list.append(name)
+            counter += 1
+
+
+        print("Device object creation complete! " + str(counter) + " objects created!")
+        return device_list
 
 # Example usage
 if __name__ == "__main__":
@@ -93,6 +117,7 @@ if __name__ == "__main__":
         print("4. List Devices")
         print("5. Exit")
         print("6. Export data to JSON")
+        print("7. Import data from JSON")
 
         choice = input("Enter your choice: ")
 
@@ -117,6 +142,16 @@ if __name__ == "__main__":
             print("Export data to JSON...")
             filename = "exported_devices.json"
             json_export( monitoring_system.return_list(), filename)
+        elif choice == "7":
+            print("Import data from JSON...")
+            filename = "exported_devices.json"
+            devicelist = json_parse(filename) #this function returns a dictionary of device objects created from json data
+            print("Parsed objects: " + str(devicelist) )
+
+            #for Device in devicelist:
+                #add the devices within devicelist to the monitoring system somehow
+
+                    
 
         else:
             print("Invalid choice. Please try again.")
