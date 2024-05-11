@@ -148,8 +148,9 @@ if __name__ == "__main__":
             devicelist = json_parse(filename) #this function returns a dictionary of device objects created from json data
             print("Parsed objects: " + str(devicelist) )
 
-            #for Device in devicelist:
-                #add the devices within devicelist to the monitoring system somehow
+            for device in devicelist:
+                monitoring_system.devices[device.name] = Device(device.name, device.priority, device.plug_status, device.energy) #add new entry to the monitored device list as dictionary entries
+                #words dont exist for how much i dont like this implementation
 
                     
 
