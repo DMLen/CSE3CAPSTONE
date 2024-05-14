@@ -103,7 +103,7 @@ def json_parse(file):
             device_list.append(name) #append device object to the return list
             counter += 1
 
-
+        f.close()
         print("Device object creation complete! " + str(counter) + " objects created!")
         return device_list
 
