@@ -84,6 +84,7 @@ def json_export(list, file):
 def json_parse(file):
     if not os.path.exists(file):
         print("File doesn't exist! Cancelling operation!") #prevent errors if a json file doesnt exist at provided directory
+        return -1
     else:
         device_list = []
         print("Parsing device objects from json data!")
@@ -146,12 +147,13 @@ if __name__ == "__main__":
         elif choice == "7":
             print("Import data from JSON...")
             filename = "exported_devices.json" #changing filename here changes the target of import data
-            devicelist = json_parse(filename) #this function returns a dictionary of device objects created from json data
-            print("Parsed objects: " + str(devicelist) ) #verify that returned objects are correct
-
-            for device in devicelist:
-                monitoring_system.devices[device.name] = Device(device.name, device.priority, device.plug_status, device.energy) #add new entry to the monitored device list as dictionary entries
-                #words dont exist for how much i dont like this implementation
+            if json_parse(filename) != -1:
+                devicelist = json_parse(filename) #this function returns a dictionary of device objects created from json data
+                print("Parsed objects: " + str(devicelist) ) #verify that returned objects are correct
+                for device in devicelist:
+                    monitoring_system.devices[device.name] = Device(device.name, device.priority, device.plug_status, device.energy) #add new entry to the monitored device list as dictionary entries
+                    #words dont exist for how much i dont like this implementation
+            print("Import failed!")
 
                     
 
