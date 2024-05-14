@@ -80,6 +80,7 @@ def json_export(list, file):
             print("Cancelling operation!")
             pass
 
+#these json methods arent part of the energymonitoring system class so they will have to be exported separately
 def json_parse(file):
     if not os.path.exists(file):
         print("File doesn't exist! Cancelling operation!") #prevent errors if a json file doesnt exist at provided directory
