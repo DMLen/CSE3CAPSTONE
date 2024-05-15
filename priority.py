@@ -153,7 +153,8 @@ if __name__ == "__main__":
                 for device in devicelist:
                     monitoring_system.devices[device.name] = Device(device.name, device.priority, device.plug_status, device.energy) #add new entry to the monitored device list as dictionary entries
                     #words dont exist for how much i dont like this implementation
-            print("Import failed!")
+            else:
+                print("Import failed!")
 
                     
 
