@@ -3,3 +3,6 @@ pip install numpy
 
 #for plug_controller.py with tapo cloud api
 pip install git+https://github.com/almottier/TapoP100.git@main
+
+#for api
+pip install Flask

@@ -1,5 +1,10 @@
 import json
 import os
+from flask import *
+import threading
+
+#flask constructor
+api = Flask(__name__) 
 
 class Device:
     def __init__(self, name, priority, plug_status, energy):
@@ -15,6 +20,9 @@ class Device:
     def __repr__(self):
         #more readable representation method (for json import)
         return f"Device object '{self.name}' at {hex(id(self))}"
+    
+    def toJson(self):
+        return json.dumps(self.__dict__,)
 
 class MonitoringSystem:
     def __init__(self):
@@ -108,9 +116,34 @@ def json_parse(file):
         print("Device object creation complete! " + str(counter) + " objects created!")
         return device_list
 
-# Example usage
+#constructor for energy system
+monitoring_system = MonitoringSystem()
+
+#api functions below
+@api.route('/')
+def api_test():
+    return "API Route works! Hello World! This text is being displayed with a Flask instance running asynchronously within a separate thread!"
+
+@api.route('/success') #generic return success
+def success():
+    return "Operation complete!"
+
+@api.route('/devices/get', methods=['GET'])
+def api_getDevices():
+    #now the dictionary implementation is really painful
+    #we cannot directly export a dictionary of values. if it was a list of objects then we wouldn't have to do this badness.
+    #no good! too bad!
+    dict = monitoring_system.return_list()
+    templist = []
+    for i in dict:
+        templist.append(i.toJson())
+    return jsonify(templist)
+
+
+#program main loop
 if __name__ == "__main__":
-    monitoring_system = MonitoringSystem()
+    apiThread = threading.Thread(target=api.run)
+    apiThread.start() #god i love multithreading
 
     while True:
         print("\n1. Add Device")
@@ -120,6 +153,7 @@ if __name__ == "__main__":
         print("5. Exit")
         print("6. Export data to JSON")
         print("7. Import data from JSON")
+        print("8. [DEBUG] View returned list")
 
         choice = input("Enter your choice: ")
 
@@ -156,6 +190,9 @@ if __name__ == "__main__":
             else:
                 print("Import failed!")
 
+        elif choice == "8": #delete this later
+            returned = monitoring_system.return_list()
+            print(returned)
                     
 
         else:
