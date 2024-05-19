@@ -132,12 +132,27 @@ def success():
 def api_getDevices():
     #now the dictionary implementation is really painful
     #we cannot directly export a dictionary of values. if it was a list of objects then we wouldn't have to do this badness.
-    #no good! too bad!
+    #no good! too bad! this is a hack but it works and that is all that matters
     dict = monitoring_system.return_list()
     templist = []
     for i in dict:
         templist.append(i.toJson())
     return jsonify(templist)
+
+@api.route('/devices/add', methods=['POST'])
+def api_addDevices(): #an example request: POST /devices/add?devicename=toaster&deviceconsumption=200&devicestatus=on&devicepriority=2
+    devicename = request.args.get("devicename")
+    deviceconsumption = request.args.get("deviceconsumption")
+    devicestatus = request.args.get("devicestatus")
+    devicepriority = request.args.get("devicepriority")
+
+    if devicename: #check that devicename exists before attempting input
+        newDevice = Device(devicename, devicepriority, devicestatus, deviceconsumption)
+        monitoring_system.devices[devicename] = newDevice
+        return("New device added!: " + devicename)
+    else:
+        return("Operation failed! Devicename is required!")
+
 
 
 #program main loop
@@ -151,8 +166,8 @@ if __name__ == "__main__":
         print("3. Turn On/Off Plug")
         print("4. List Devices")
         print("5. Exit")
-        print("6. Export data to JSON")
-        print("7. Import data from JSON")
+        print("6. Export data to local JSON")
+        print("7. Import data from local JSON")
         print("8. [DEBUG] View returned list")
 
         choice = input("Enter your choice: ")
