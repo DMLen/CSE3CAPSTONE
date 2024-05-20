@@ -1,5 +1,6 @@
 #USING THE LIBRARY FROM THIS BEAUTIFUL BEAUTIFUL MAN
 #https://github.com/almottier/TapoP100
+#you need to manually download this btw
 
 from credentials import *
 from PyP100 import PyP110
