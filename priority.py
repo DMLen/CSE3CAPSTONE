@@ -23,6 +23,9 @@ class Device:
     
     def toJson(self):
         return json.dumps(self.__dict__,)
+    
+    def toggle(self):
+        self.plug_status = not self.plug_status #boolean toggle using Not logical operator
 
 class MonitoringSystem:
     def __init__(self):
@@ -32,7 +35,7 @@ class MonitoringSystem:
         if name in self.devices:
             print(f"Device '{name}' already exists. Please choose a different name.")
             return
-        plug_status = input(f"Do you want to turn on the plug for device '{name}'? (yes/no): ")
+        plug_status = input(f"Do you want to turn on the plug for device '{name}'? (True/False): ")
         energy = float(input(f"Enter energy consumption for device '{name}' (in watts): "))
         self.devices[name] = Device(name, priority, plug_status, energy)
         print(f"Device '{name}' added with priority '{priority}', plug status '{plug_status}', and energy consumption '{energy}' watts.")
@@ -156,9 +159,9 @@ def api_addDevices(): #an example request: POST /devices/add?devicename=toaster&
 
 
 #program main loop
+apiThread = threading.Thread(target=api.run)
+apiThread.start() #god i love multithreading
 if __name__ == "__main__":
-    apiThread = threading.Thread(target=api.run)
-    apiThread.start() #god i love multithreading
 
     while True:
         print("\n1. Add Device")
