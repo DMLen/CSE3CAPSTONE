@@ -1,0 +1,27 @@
+//generic get devices request
+
+curl --request GET \
+  --url http://127.0.0.1:5000/devices/get \
+  --header 'Content-Type: application/json'
+
+
+
+//add device with the following values:
+//
+// devicename=Toaster
+// deviceconsumption=200
+// devicestatus=on
+// devicepriority=2
+//
+// note: the order of these are important! if you do not follow this order then something will probably break
+
+curl --request POST \
+  --url 'http://127.0.0.1:5000/devices/add?devicename=Toaster&deviceconsumption=200&devicestatus=on&devicepriority=2' \
+  --header 'Content-Type: application/json'
+
+
+
+//remove device named Toaster
+
+curl --request DELETE \
+  --url 'http://127.0.0.1:5000/devices/remove?devicename=Toaster'
