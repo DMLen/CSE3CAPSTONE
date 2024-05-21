@@ -24,8 +24,23 @@ class Device:
     def toJson(self):
         return json.dumps(self.__dict__,)
     
-    def toggle(self):
+    def toggleState(self):
         self.plug_status = not self.plug_status #boolean toggle using Not logical operator
+
+    def turnOn(self):
+        self.plug_status = True
+
+    def turnOff(self):
+        self.plug_status = False
+
+    def overwriteState(self, state):
+        self.plug_status = state
+
+    def overwritePriority(self, priority):
+        self.priority = priority
+
+    def overwriteConsumption(self, consumption):
+        self.energy = consumption
 
 class MonitoringSystem:
     def __init__(self):
