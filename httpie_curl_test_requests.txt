@@ -25,3 +25,20 @@ curl --request POST \
 
 curl --request DELETE \
   --url 'http://127.0.0.1:5000/devices/remove?devicename=Toaster'
+
+
+//load devices from json
+//note: this overrides current devices, so do this asap. multithreading is janky so apparently this is needed. it is some esoteric code voodoo nonsense i dont have the spirit to properly fix. so have this stupid hack instead.
+
+curl --request GET \
+  --url http://127.0.0.1:5000/devices/load
+  
+
+//update device named Toaster
+//
+// Usage: All update requests must include devicename as the name of the device to be edited.
+//        Any other values, if supplied, will overwrite those of the device object in the list.
+//        Any excluded values will be left as is. The below example will overwrite all possible values.
+
+curl --request PUT \
+  --url 'http://127.0.0.1:5000/devices/edit?devicename=Toaster&deviceconsumption=9999&devicestatus=off&devicepriority=4'
