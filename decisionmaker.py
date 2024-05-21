@@ -116,7 +116,7 @@ def api_editDevice():
         overwrittenconsumption = 1
 
     if devicestatus:
-        (deviceSystem.get_deviceSingle(index)).overwriteStatus(devicestatus)
+        (deviceSystem.get_deviceSingle(index)).overwriteState(devicestatus)
         overwrittenstatus = 1
 
     if devicepriority:
