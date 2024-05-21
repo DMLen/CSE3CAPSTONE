@@ -17,6 +17,10 @@ class listObject:
     def remove_device(self, i):
         del self.devicelist[i]
 
+    def get_deviceSingle(self, i):
+        return self.devicelist[i]
+        
+
 #flask constructor
 api = Flask(__name__) 
 
@@ -31,6 +35,15 @@ templist = json_parse(filename)
 deviceSystem.devicelist = templist
 print("Devices parsed:")
 print( deviceSystem.get_devices() )
+
+#HELPER FUNCTIONS
+def linearsearch(list, name):
+        #"if device with name is in the list, return its index"
+        #"otherwise, return -1"
+        for i, Device in enumerate(list):
+            if Device.name == name:
+                return i
+        return -1
 
 #API CALLS
 @api.route('/')
@@ -66,14 +79,6 @@ def api_addDevices(): #an example request: POST /devices/add?devicename=toaster&
 @api.route('/devices/remove', methods=['DELETE'])
 def api_removeDevice(): #an example request: DELETE /devices/remove?devicename=Toaster
 
-    def linearsearch(list, name):
-        #"if word with name is in the list, return its index"
-        #"otherwise, return -1"
-        for i, Device in enumerate(list):
-            if Device.name == name:
-                return i
-        return -1
-
     devicename = request.args.get("devicename") #should be a string matching the name of a device in the devicelist
 
     index = linearsearch(deviceSystem.get_devices(), devicename)
@@ -83,10 +88,55 @@ def api_removeDevice(): #an example request: DELETE /devices/remove?devicename=T
     else:
         deviceSystem.remove_device(index)
         return("Device removed!")
+    
+#todo: add new api routes
+#edit device
+@api.route('/devices/edit', methods=['PUT']) #please refer to documentation for proper usage of this method!
+def api_editDevice():
+    devicename = request.args.get("devicename") #should be a string, required. select the device to be overwritten.
+    deviceconsumption = request.args.get("deviceconsumption") #should be an integer in watts. if provided, overwrites the device wattage.
+    devicestatus = request.args.get("devicestatus") #should be either True or False. if provided, overwrites the device current state.
+    devicepriority = request.args.get("devicepriority") #any number from 1 to 5. if provided, overwrites the device current priority.
+
+    overwrittenconsumption = 0
+    overwrittenstatus = 0
+    overwrittenpriority = 0
+
+    if not devicename:
+        return("Device name is required!")
+    
+    index = linearsearch(deviceSystem.get_devices(), devicename)
+    if index == -1:
+        return("No device appears to be in list by that name!")
+    
+    if deviceconsumption:
+        (deviceSystem.get_deviceSingle(index)).overwriteConsumption(deviceconsumption)
+        overwrittenconsumption = 1
+
+    if devicestatus:
+        (deviceSystem.get_deviceSingle(index)).overwriteStatus(devicestatus)
+        overwrittenstatus = 1
+
+    if devicepriority:
+        (deviceSystem.get_deviceSingle(index)).overwritePriority(devicepriority)
+        overwrittenpriority = 1
+
+    return(f"""Operation complete!\n
+            Devicename: {devicename}\n
+            Overwritten consumption: {overwrittenconsumption} (if 1; new value is {deviceconsumption})\n
+            Overwritten status: {overwrittenstatus} (if 1; new value is {devicestatus})\n
+            Overwritten priority: {overwrittenpriority} (if 1; new value is {devicepriority})
+           """)
+        
+
+#overwrite device
+#get single device
+#toggle single device
 
 
 apiThread = threading.Thread(target=api.run)
 apiThread.start() #god i love multithreading
+deviceSystem.devicelist = templist
 
 #MAIN LOOP
 isRunning = True
