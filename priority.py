@@ -4,7 +4,7 @@ from flask import *
 import threading
 
 #flask constructor
-api = Flask(__name__) 
+priorityAPI = Flask(__name__) 
 
 class Device:
     def __init__(self, name, priority, plug_status, energy):
@@ -137,17 +137,17 @@ def json_parse(file):
 #constructor for energy system
 monitoring_system = MonitoringSystem()
 
-#api functions below
-@api.route('/')
-def api_test():
-    return "API Route works! Hello World! This text is being displayed with a Flask instance running asynchronously within a separate thread!"
+#priorityAPI functions below
+@priorityAPI.route('/')
+def priorityAPI_test():
+    return "priorityAPI Route works! Hello World! This text is being displayed with a Flask instance running asynchronously within a separate thread!"
 
-@api.route('/success') #generic return success
+@priorityAPI.route('/success') #generic return success
 def success():
     return "Operation complete!"
 
-@api.route('/devices/get', methods=['GET'])
-def api_getDevices():
+@priorityAPI.route('/devices/get', methods=['GET'])
+def priorityAPI_getDevices():
     #now the dictionary implementation is really painful
     #we cannot directly export a dictionary of values. if it was a list of objects then we wouldn't have to do this badness.
     #no good! too bad! this is a hack but it works and that is all that matters
@@ -157,8 +157,8 @@ def api_getDevices():
         templist.append(i.toJson())
     return jsonify(templist)
 
-@api.route('/devices/add', methods=['POST'])
-def api_addDevices(): #an example request: POST /devices/add?devicename=toaster&deviceconsumption=200&devicestatus=on&devicepriority=2
+@priorityAPI.route('/devices/add', methods=['POST'])
+def priorityAPI_addDevices(): #an example request: POST /devices/add?devicename=toaster&deviceconsumption=200&devicestatus=on&devicepriority=2
     devicename = request.args.get("devicename")
     deviceconsumption = request.args.get("deviceconsumption")
     devicestatus = request.args.get("devicestatus")
@@ -174,8 +174,8 @@ def api_addDevices(): #an example request: POST /devices/add?devicename=toaster&
 
 
 #program main loop
-apiThread = threading.Thread(target=api.run)
-apiThread.start() #god i love multithreading
+#priorityAPIThread = threading.Thread(target=priorityAPI.run)
+#priorityAPIThread.start() #god i love multithreading
 if __name__ == "__main__":
 
     while True:
