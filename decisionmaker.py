@@ -3,6 +3,7 @@ from priority import Device, json_export, json_parse
 import os
 from flask import *
 import threading
+import sys
 
 class listObject:
     def __init__(self):
@@ -43,11 +44,13 @@ def success():
 
 @api.route('/devices/get', methods=['GET'])
 def api_getDevices():
-    templist = []
-    for i in deviceSystem.get_devices():
-        templist.append(i.toJson())
-    print(templist)
-    return jsonify(templist)
+    templist = deviceSystem.get_devices()
+    returnlist = []
+    print("Templist: " + str(templist), file=sys.stderr) #debug statement
+    for i in templist:
+        returnlist.append(i.toJson())
+    print("Returnlist: " + str(returnlist), file=sys.stderr)
+    return jsonify(returnlist)
 
 @api.route('/devices/add', methods=['POST'])
 def api_addDevices(): #an example request: POST /devices/add?devicename=toaster&deviceconsumption=200&devicestatus=True&devicepriority=2
@@ -91,6 +94,6 @@ apiThread.start() #god i love multithreading
 #MAIN LOOP
 isRunning = True
 while isRunning:
-    input("Do a thing!")
+    input("Do a thing!\n")
     print("Doing a thing!")
     print( deviceSystem.get_devices() )
