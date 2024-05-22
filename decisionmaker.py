@@ -4,7 +4,6 @@ import os
 from flask import *
 import threading
 import sys
-
 class listObject:
     def __init__(self):
         self.devicelist = []
@@ -27,7 +26,11 @@ api = Flask(__name__)
 
 deviceSystem = listObject()
 
+#initialize the system with devices from json
 filename = "exported_devices.json"
+templist = json_parse(filename)
+for i in templist:
+    deviceSystem.append_device(i)
 
 #HELPER FUNCTIONS
 def linearsearch(list, name):
@@ -45,14 +48,6 @@ def api_test():
 
 @api.route('/success') #generic return success
 def success():
-    return "Operation complete!"
-
-#this is a stupid hack. multithreading breaks initializing json devices. it is some voodoo shit i dont understand. just make sure this is called asap whenever the program starts.
-@api.route('/devices/load')
-def api_devicesLoad():
-    templist = json_parse(filename)
-    for i in templist:
-        deviceSystem.append_device(i)
     return "Operation complete!"
 
 @api.route('/devices/get', methods=['GET'])
