@@ -4,7 +4,10 @@ import os
 from flask import *
 import threading
 import sys
-class listObject:
+from datetime import datetime
+
+print("Initialising system...")
+class listObject: #this holds our devices and lets us change them dynamically
     def __init__(self):
         self.devicelist = []
 
@@ -124,7 +127,7 @@ def api_editDevice():
             Overwritten consumption: {overwrittenconsumption} (if 1; new value is {deviceconsumption})\n
             Overwritten status: {overwrittenstatus} (if 1; new value is {devicestatus})\n
             Overwritten priority: {overwrittenpriority} (if 1; new value is {devicepriority})
-           """)
+           """) #p.s. can someone fix these newlines not working? the return text looks ugly and messy as they dont work
         
 
 #overwrite device
@@ -135,9 +138,17 @@ def api_editDevice():
 apiThread = threading.Thread(target=api.run)
 apiThread.start() #god i love multithreading
 
+now = datetime.now()
+time_date = now.strftime("%H:%M:%S %d/%m/%Y")
+
 #MAIN LOOP
+print(f"Program started at {time_date}!")
 isRunning = True
 while isRunning:
-    input("Do a thing!\n")
+    input("Do a thing!\n") #algorithm will go here btw. this is just so we can make sure the device list is updating properly
     print("Doing a thing!")
     print( deviceSystem.get_devices() )
+
+now = datetime.now()
+time_date = now.strftime("%H:%M:%S %d/%m/%Y")
+print(f"Program terminated at {time_date}!")
