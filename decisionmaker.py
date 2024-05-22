@@ -51,7 +51,8 @@ def success():
 @api.route('/devices/load')
 def api_devicesLoad():
     templist = json_parse(filename)
-    deviceSystem.devicelist = templist
+    for i in templist:
+        deviceSystem.append_device(i)
     return "Operation complete!"
 
 @api.route('/devices/get', methods=['GET'])
