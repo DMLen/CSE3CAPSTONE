@@ -12,6 +12,7 @@ class Device:
         self.priority = priority
         self.plug_status = plug_status
         self.energy = energy
+        self.plugip = "0.0.0.0" #ip has to be assigned after the fact
 
     def __str__(self):
         #object print method
@@ -41,6 +42,12 @@ class Device:
 
     def overwriteConsumption(self, consumption):
         self.energy = consumption
+
+    def overwritePlugIP(self, ipaddress):
+        self.plugip = ipaddress
+    
+    def returnPlugIP(self):
+        return self.plugip
 
 class MonitoringSystem:
     def __init__(self):

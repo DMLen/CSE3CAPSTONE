@@ -98,10 +98,12 @@ def api_editDevice():
     deviceconsumption = request.args.get("deviceconsumption") #should be an integer in watts. if provided, overwrites the device wattage.
     devicestatus = request.args.get("devicestatus") #should be either True or False. if provided, overwrites the device current state.
     devicepriority = request.args.get("devicepriority") #any number from 1 to 5. if provided, overwrites the device current priority.
+    deviceIP = request.args.get("deviceIP") #should be a valid ipv4 local address in string format
 
     overwrittenconsumption = 0
     overwrittenstatus = 0
     overwrittenpriority = 0
+    overwrittenIP = 0
 
     if not devicename:
         return("Device name is required!")
@@ -122,11 +124,16 @@ def api_editDevice():
         (deviceSystem.get_deviceSingle(index)).overwritePriority(devicepriority)
         overwrittenpriority = 1
 
+    if deviceIP:
+        (deviceSystem.get_deviceSingle(index)).overwritePlugIP(deviceIP)
+        overwrittenIP = 1
+
     return(f"""Operation complete!\n
             Devicename: {devicename}\n
             Overwritten consumption: {overwrittenconsumption} (if 1; new value is {deviceconsumption})\n
             Overwritten status: {overwrittenstatus} (if 1; new value is {devicestatus})\n
             Overwritten priority: {overwrittenpriority} (if 1; new value is {devicepriority})
+            Overwritten IP: {overwrittenIP} (if 1; new value is {deviceIP})
            """) #p.s. can someone fix these newlines not working? the return text looks ugly and messy as they dont work
         
 
