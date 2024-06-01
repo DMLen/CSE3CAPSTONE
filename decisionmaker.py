@@ -5,6 +5,8 @@ from flask import *
 import threading
 import sys
 from datetime import datetime
+import time
+import random
 
 print("Initialising system...")
 class listObject: #this holds our devices and lets us change them dynamically
@@ -27,7 +29,11 @@ class listObject: #this holds our devices and lets us change them dynamically
 #flask constructor
 api = Flask(__name__) 
 
+#creating list holder
 deviceSystem = listObject()
+
+#creating virtual powerbox for testing purposes
+powerBox = SimulatedConsumerMeter()
 
 #initialize the system with devices from json
 filename = "exported_devices.json"
@@ -141,6 +147,16 @@ def api_editDevice():
 #get single device
 #toggle single device
 
+### CONFIGURATION ###
+
+#polling length (how long should we wait before running the algorithm again)
+polling = 30
+
+#randomization range (the upper and lower bounds of power production test values)
+maxProductionLimit = 5000
+minProductionLimit = 0
+
+### END CONFIGURATION
 
 apiThread = threading.Thread(target=api.run)
 apiThread.start() #god i love multithreading
@@ -152,10 +168,69 @@ time_date = now.strftime("%H:%M:%S %d/%m/%Y")
 print(f"Program started at {time_date}!")
 isRunning = True
 while isRunning:
-    input("Do a thing!\n") #algorithm will go here btw. this is just so we can make sure the device list is updating properly
-    print("Doing a thing!")
-    print( deviceSystem.get_devices() )
+    #step 1. assess current system state (consumption)
+    #this is written using a non-functional virtual test method for the device objects. (doesnt interface with plugs currently)
+    #to make this work, first associate each device object with a physical plug using the interface library in plug_controller.py
+    #then, have tempsum be the real current consumption values from all devices that are turned on
+    print("Assessing power consumption (virtual simulation):")
+    tempsum = 0
+    for device in deviceSystem.devicelist:
+        if ( int(device.returnState()) == 1 ) or (device.returnState == "1"): #only consider the values of devices we know to be on
+            tempsum += device.returnConsumption()
+        else:
+            pass
+    powerBox.set_powerConsumption(tempsum)    
+    
 
+    #step 1.2. assess the current system state (production)
+    #in a proper implementation, this would be "get production value from the solar panels"
+    #we are instead going to use a randomized method to generate these values instead for the purposes of testing (like in demo1.py)
+    #obviously you can replace this when properly implementing this.
+    #production = random.randint(minProductionLimit, maxProductionLimit)
+    powerBox.set_pvPower(1000)
+
+    #at this state, we know the current consumption of the system, and the production of the system.
+    print("!!! CURRENT SYSTEM STATE!!!")
+    powerBox.print_readout()
+
+    #If we are currently in a defecit, begin this logic loop to try and minimize the defecit (switching off devices)
+    if powerBox.get_status() == "defecit":
+        print("DEFECIT!!! Attempting to minimize it...")
+
+        #priority 1 devices will be considered first for elimination (being turned off)
+        #after turning a device off, we then check if there is still a defecit.
+        #if there is, we continue.
+        #after all priority 1 devices have been turned off, we then begin to consider priority 2 devices.
+        #we will do this up to priority 5.
+
+        for priority in range(1, 6): #6 and not 5 because of how range works
+            print(f"Considering priority {priority} devices:")
+            for device in deviceSystem.get_devices():
+                if ( int(device.priority) == priority ) and ( powerBox.get_status() == "defecit" ):
+                    print(f"Turning off {device.name}! Priority: {device.priority}")
+                    device.turnOff()
+
+                    #updating consumption of the virtual powerbox
+                    #again this wouldnt be needed for a real powerbox.
+                    powerBox.powerConsumption -= device.energy
+
+                    print(f"New defecit: {powerBox.get_powerDifference()}\n")
+
+        print("Defecit has been minimized as best we can!")
+        print(f"Final defecit for this polling interval: {powerBox.get_powerDifference()}")
+
+    #if we are not in a defecit, turn on some devices as long as it wont result in a defecit
+    else:
+        print("SURPLUS!!!")
+
+
+
+    #end of algorithm, sleep for length of polling period
+    time.sleep(polling)
+
+
+
+#POST-LOOP
 now = datetime.now()
 time_date = now.strftime("%H:%M:%S %d/%m/%Y")
 print(f"Program terminated at {time_date}!")

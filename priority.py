@@ -29,10 +29,10 @@ class Device:
         self.plug_status = not self.plug_status #boolean toggle using Not logical operator
 
     def turnOn(self):
-        self.plug_status = True
+        self.plug_status = 1
 
     def turnOff(self):
-        self.plug_status = False
+        self.plug_status = 0
 
     def overwriteState(self, state):
         self.plug_status = state
@@ -48,6 +48,15 @@ class Device:
     
     def returnPlugIP(self):
         return self.plugip
+    
+    def returnConsumption(self):
+        return self.energy
+    
+    def returnState(self):
+        return self.plug_status
+    
+    def returnPriority(self):
+        return self.priority
 
 class MonitoringSystem:
     def __init__(self):
@@ -57,7 +66,7 @@ class MonitoringSystem:
         if name in self.devices:
             print(f"Device '{name}' already exists. Please choose a different name.")
             return
-        plug_status = input(f"Do you want to turn on the plug for device '{name}'? (True/False): ")
+        plug_status = input(f"Do you want to turn on the plug for device '{name}'? (1/0): ")
         energy = float(input(f"Enter energy consumption for device '{name}' (in watts): "))
         self.devices[name] = Device(name, priority, plug_status, energy)
         print(f"Device '{name}' added with priority '{priority}', plug status '{plug_status}', and energy consumption '{energy}' watts.")
