@@ -160,6 +160,7 @@ minProductionLimit = 0
 
 apiThread = threading.Thread(target=api.run)
 apiThread.start() #god i love multithreading
+time.sleep(5) #give flask some time to start
 
 now = datetime.now()
 time_date = now.strftime("%H:%M:%S %d/%m/%Y")
@@ -186,16 +187,17 @@ while isRunning:
     #in a proper implementation, this would be "get production value from the solar panels"
     #we are instead going to use a randomized method to generate these values instead for the purposes of testing (like in demo1.py)
     #obviously you can replace this when properly implementing this.
-    #production = random.randint(minProductionLimit, maxProductionLimit)
-    powerBox.set_pvPower(1000)
+    production = random.randint(minProductionLimit, maxProductionLimit)
+    powerBox.set_pvPower(production)
 
     #at this state, we know the current consumption of the system, and the production of the system.
     print("!!! CURRENT SYSTEM STATE!!!")
     powerBox.print_readout()
+    print("\n") #for prettier printing of following processes
 
     #If we are currently in a defecit, begin this logic loop to try and minimize the defecit (switching off devices)
     if powerBox.get_status() == "defecit":
-        print("DEFECIT!!! Attempting to minimize it...")
+        print(f"DEFECIT OF {powerBox.get_powerDifference()}!!! Attempting to minimize it...")
 
         #priority 1 devices will be considered first for elimination (being turned off)
         #after turning a device off, we then check if there is still a defecit.
@@ -204,28 +206,46 @@ while isRunning:
         #we will do this up to priority 5.
 
         for priority in range(1, 6): #6 and not 5 because of how range works
-            print(f"Considering priority {priority} devices:")
+            print(f"Considering priority {priority} devices for turning off:")
             for device in deviceSystem.get_devices():
-                if ( int(device.priority) == priority ) and ( powerBox.get_status() == "defecit" ):
-                    print(f"Turning off {device.name}! Priority: {device.priority}")
-                    device.turnOff()
+                if ( int(device.priority) == priority ) and ( powerBox.get_status() == "defecit" ): #check if we are considering devices of this priority, and if we are currently in a defecit
+                    if int(device.plug_status) == 1: #if device is already on
+                        print(f"Turning off {device.name} with a consumption of {device.energy}! Priority: {device.priority}")
+                        device.turnOff()
 
-                    #updating consumption of the virtual powerbox
-                    #again this wouldnt be needed for a real powerbox.
-                    powerBox.powerConsumption -= device.energy
+                        #updating consumption of the virtual powerbox
+                        #again this wouldnt be needed for a real powerbox.
+                        powerBox.powerConsumption -= device.energy
 
-                    print(f"New defecit: {powerBox.get_powerDifference()}\n")
+                        print(f"New defecit: {powerBox.get_powerDifference()}\n")
 
         print("Defecit has been minimized as best we can!")
-        print(f"Final defecit for this polling interval: {powerBox.get_powerDifference()}")
+        powerBox.print_readout()
 
     #if we are not in a defecit, turn on some devices as long as it wont result in a defecit
+    #priority 5 devices we will try to turn on first
+    #this is basically the same thing as above but in reverse
     else:
-        print("SURPLUS!!!")
+        print(f"SURPLUS OF {powerBox.get_powerDifference()}!!! Let's turn some more devices back on now...")
+        for priority in reversed( range(1, 6) ): #outputs the list [5, 4, 3, 2 , 1] and these are the priorities we check in that order
+            print(f"Considering priority {priority} devices for turning on:")
+            for device in deviceSystem.get_devices():
+                if ( int(device.priority) == priority ) and ( powerBox.get_status() == "surplus" ): #if we are currently considering devices of this priority and we are in a surplus, proceed
+                    if int(device.plug_status) == 0:
+                        print(f"Turning on {device.name} with a consumption of {device.energy}! Priority: {priority}\n")
+                        device.turnOn()
+
+                        #updating consumption of the virtual powerbox
+                        powerBox.powerConsumption += device.energy
+                        print(f"New surplus: {powerBox.get_powerDifference()}\n")
+
+        print("We've tried turning on some devices!")
+        powerBox.print_readout()
 
 
 
     #end of algorithm, sleep for length of polling period
+    print(f"End of polling activity. Sleeping for {polling} seconds as defined in the config before we repeat!")
     time.sleep(polling)
 
 
