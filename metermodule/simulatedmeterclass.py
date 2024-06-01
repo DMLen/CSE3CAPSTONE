@@ -33,5 +33,5 @@ class SimulatedConsumerMeter:
     def print_readout(self):
         print("Current consumption: " + str(self.powerConsumption) )
         print("Current PV power: " + str(self.pvPower) )
-        print("Current surplus/defecit: " + str(self.get_powerDifference()) )
+        print("Current raw surplus/defecit: " + str(self.get_powerDifference()) )
         print("Status: " + self.get_status())
