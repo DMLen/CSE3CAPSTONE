@@ -1,3 +1,6 @@
-{"name": "Electric Sheep", "priority": "2", "plug_status": "True", "energy": 10000.0}
-{"name": "Television", "priority": "3", "plug_status": "False", "energy": 200.0}
-{"name": "Radio", "priority": "1", "plug_status": "True", "energy": 100.0}
+{"name": "Washing Machine", "priority": "2", "plug_status": "1", "energy": 600.0}
+{"name": "Television", "priority": "1", "plug_status": "1", "energy": 200.0}
+{"name": "Phone Charger", "priority": "1", "plug_status": "1", "energy": 100.0}
+{"name": "Fridge", "priority": "2", "plug_status": "1", "energy": 800.0}
+{"name": "Radio", "priority": "1", "plug_status": "1", "energy": 100.0}
+{"name": "Heater", "priority": "4", "plug_status": "1", "energy": 900.0}
