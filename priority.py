@@ -12,6 +12,8 @@ class Device(PyP110.P110):
         super().__init__(plugip, accountemail, accountpassword)
         self.name = name
         self.priority = priority
+        self.plug_status = "OBSOLETED"
+        self.energy = "OBSOLETED"
 
     #we inherit some very important functions from the PyP110 class
     #namely, 
@@ -49,7 +51,9 @@ class Device(PyP110.P110):
 
     
     def returnState(self):
-        return self.plug_status
+        plugdict = self.getDeviceInfo()
+        state = plugdict["device_on"]
+        return state
     
     def returnPriority(self):
         return self.priority
