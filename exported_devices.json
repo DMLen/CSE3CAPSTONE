@@ -1,7 +1,2 @@
-{"name": "Washing Machine", "priority": "2", "plug_status": "1", "energy": 600.0}
-{"name": "Television", "priority": "1", "plug_status": "1", "energy": 200.0}
-{"name": "Phone Charger", "priority": "1", "plug_status": "1", "energy": 100.0}
-{"name": "Fridge", "priority": "2", "plug_status": "1", "energy": 800.0}
-{"name": "Radio", "priority": "1", "plug_status": "1", "energy": 100.0}
-{"name": "Heater", "priority": "4", "plug_status": "1", "energy": 900.0}
-{"name": "EV Car Charger", "priority": "4", "plug_status": "1", "energy": 2500.0}
+{"plugip": "192.168.0.225", "accountemail": "21240797@students.latrobe.edu.au", "accountpassword": "mbw28bag", "name": "Plug 1", "priority": "2"}
+{"plugip": "192.168.0.226", "accountemail": "21240797@students.latrobe.edu.au", "accountpassword": "mbw28bag", "name": "Plug 2", "priority": "1"}

@@ -2,17 +2,24 @@ import json
 import os
 from flask import *
 import threading
+from PyP100 import PyP110
 
 #flask constructor
 priorityAPI = Flask(__name__) 
 
-class Device:
-    def __init__(self, name, priority, plug_status, energy):
+class Device(PyP110.P110):
+    def __init__(self, plugip, accountemail, accountpassword, name, priority,):
+        super().__init__(plugip, accountemail, accountpassword)
         self.name = name
         self.priority = priority
-        self.plug_status = plug_status
-        self.energy = energy
-        self.plugip = "0.0.0.0" #ip has to be assigned after the fact
+
+    #we inherit some very important functions from the PyP110 class
+    #namely, 
+    # p110.getEnergyUsage()
+    # p100.turnOn()
+    # p100.toggleState()
+    # p100.getDeviceInfo()
+    # (these methods are now called with Device.turnOn(), etc as they are inherited)
 
     def __str__(self):
         #object print method
@@ -24,24 +31,9 @@ class Device:
     
     def toJson(self):
         return json.dumps(self.__dict__,)
-    
-    def toggleState(self):
-        self.plug_status = not self.plug_status #boolean toggle using Not logical operator
-
-    def turnOn(self):
-        self.plug_status = 1
-
-    def turnOff(self):
-        self.plug_status = 0
-
-    def overwriteState(self, state):
-        self.plug_status = state
 
     def overwritePriority(self, priority):
         self.priority = priority
-
-    def overwriteConsumption(self, consumption):
-        self.energy = consumption
 
     def overwritePlugIP(self, ipaddress):
         self.plugip = ipaddress
