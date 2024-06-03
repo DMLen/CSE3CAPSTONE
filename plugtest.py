@@ -15,7 +15,21 @@ testplug1.turnOn()
 testplug2.turnOn()
 sleep(5)
 print(f"{testplug1.name} info: {testplug1.returnConsumption()} watts!\n{testplug2.name} info: {testplug2.returnConsumption()} watts!")
-print(f"{testplug1.returnState()}")
+
+print(f"{testplug1.getDeviceInfo()}")
+print(f"{testplug2.getDeviceInfo()}")
+
+print(f"{testplug1.getEnergyUsage()}")
+print(f"{testplug2.getEnergyUsage()}")
+
+print(f"Plug 1 state: {testplug1.returnState()}")
+print(f"Plug 2 state: {testplug2.returnState()}")
+
+print("Turning off!")
 testplug1.turnOff()
 testplug2.turnOff()
-print(f"{testplug1.returnState()}")
+print(f"Plug 1 state: {testplug1.returnState()}")
+print(f"Plug 2 state: {testplug2.returnState()}")
+
+print(f"{testplug1.getDeviceInfo()}")
+print(f"{testplug2.getDeviceInfo()}")
