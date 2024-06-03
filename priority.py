@@ -8,12 +8,13 @@ from PyP100 import PyP110
 priorityAPI = Flask(__name__) 
 
 class Device(PyP110.P110):
-    def __init__(self, plugip, accountemail, accountpassword, name, priority,):
+    def __init__(self, plugip, accountemail, accountpassword, name, priority, typicalconsumption):
         super().__init__(plugip, accountemail, accountpassword)
         self.name = name
         self.priority = priority
         self.plug_status = "OBSOLETED"
         self.energy = "OBSOLETED"
+        self.typicalconsumption = typicalconsumption
 
     #we inherit some very important functions from the PyP110 class
     #namely, 
