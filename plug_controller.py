@@ -1,6 +1,8 @@
 #USING THE LIBRARY FROM THIS BEAUTIFUL BEAUTIFUL MAN
 #https://github.com/almottier/TapoP100
 #you need to manually download this btw
+#installation is done with the following command in the terminal
+#pip install git+https://github.com/almottier/TapoP100.git@main
 
 from credentials import *
 from PyP100 import PyP110
