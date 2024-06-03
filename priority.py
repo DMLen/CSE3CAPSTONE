@@ -41,8 +41,12 @@ class Device(PyP110.P110):
     def returnPlugIP(self):
         return self.plugip
     
-    def returnConsumption(self):
-        return self.energy
+    def returnConsumption(self): #redundant? not exactly. the default getDeviceInfo() method returns a dictionary with lots of other info. this function returns only the instantaneous wattage.
+        plugdict = self.getEnergyUsage()
+        milliwatts = plugdict["current_power"]
+        wattage = milliwatts/1000
+        return wattage
+
     
     def returnState(self):
         return self.plug_status
