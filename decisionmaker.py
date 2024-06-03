@@ -176,7 +176,7 @@ while isRunning:
     print("Assessing power consumption (virtual simulation):")
     tempsum = 0
     for device in deviceSystem.devicelist:
-        if ( int(device.returnState()) == 1 ) or (device.returnState == "1"): #only consider the values of devices we know to be on
+        if device.returnState() is True: #only consider the values of devices we know to be on
             tempsum += device.returnConsumption()
         else:
             pass
@@ -209,17 +209,17 @@ while isRunning:
             print(f"Considering priority {priority} devices for turning off:")
             for device in deviceSystem.get_devices():
                 if ( int(device.priority) == priority ) and ( powerBox.get_status() == "defecit" ): #check if we are considering devices of this priority, and if we are currently in a defecit
-                    if int(device.plug_status) == 1: #if device is already on
-                        print(f"Turning off {device.name} with a consumption of {device.energy}! Priority: {device.priority}")
+                    if device.returnState() is True: #if device is already on
+                        print(f"Turning off {device.name} with a consumption of {device.returnConsumption()}! Priority: {device.priority}")
                         device.turnOff()
 
                         #updating consumption of the virtual powerbox
                         #again this wouldnt be needed for a real powerbox.
-                        powerBox.powerConsumption -= device.energy
+                        powerBox.powerConsumption -= device.returnConsumption()
 
                         print(f"New defecit: {powerBox.get_powerDifference()}\n")
 
-        print("Defecit has been minimized as best we can!")
+        print("\nDefecit has been minimized as best we can!")
         powerBox.print_readout()
 
     #if we are not in a defecit, turn on some devices as long as it wont result in a defecit
@@ -231,15 +231,17 @@ while isRunning:
             print(f"Considering priority {priority} devices for turning on:")
             for device in deviceSystem.get_devices():
                 if ( int(device.priority) == priority ) and ( powerBox.get_status() == "surplus" ): #if we are currently considering devices of this priority and we are in a surplus, proceed
-                    if int(device.plug_status) == 0:
-                        print(f"Turning on {device.name} with a consumption of {device.energy}! Priority: {priority}\n")
+                    if device.returnState() is False:
+                        print(f"Turning on {device.name} with a current consumption of {device.returnConsumption()}! Priority: {priority}\n")
                         device.turnOn()
+                        time.sleep(5) #give devices some time to turn on and normalise
 
                         #updating consumption of the virtual powerbox
-                        powerBox.powerConsumption += device.energy
+                        powerBox.powerConsumption += device.returnConsumption()
                         print(f"New surplus: {powerBox.get_powerDifference()}\n")
 
-        print("We've tried turning on some devices!")
+        time.sleep(5) #give devices some time to properly turn on and normalise before reporting new power usage info
+        print("\nWe've tried turning on some devices!")
         powerBox.print_readout()
 
 
