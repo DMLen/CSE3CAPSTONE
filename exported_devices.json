@@ -1,2 +1,2 @@
-{"plugip": "192.168.0.225", "accountemail": "21240797@students.latrobe.edu.au", "accountpassword": "mbw28bag", "name": "Plug 1 (lamp)", "priority": "1"}
-{"plugip": "192.168.0.226", "accountemail": "21240797@students.latrobe.edu.au", "accountpassword": "mbw28bag", "name": "Plug 2 (heater)", "priority": "2"}
+{"plugip": "192.168.0.225", "accountemail": "21240797@students.latrobe.edu.au", "accountpassword": "mbw28bag", "name": "Plug 1 (lamp)", "priority": "1", "typicalconsumption": "4"}
+{"plugip": "192.168.0.226", "accountemail": "21240797@students.latrobe.edu.au", "accountpassword": "mbw28bag", "name": "Plug 2 (heater)", "priority": "2", "typicalconsumption": "2000"}
