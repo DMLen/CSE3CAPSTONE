@@ -173,6 +173,7 @@ while isRunning:
     #this is written using a non-functional virtual test method for the device objects. (doesnt interface with plugs currently)
     #to make this work, first associate each device object with a physical plug using the interface library in plug_controller.py
     #then, have tempsum be the real current consumption values from all devices that are turned on
+    numOfDevices = len(deviceSystem.devicelist)
     print("Assessing power consumption (virtual simulation):")
     tempsum = 0
     for device in deviceSystem.devicelist:
@@ -191,7 +192,7 @@ while isRunning:
     powerBox.set_pvPower(production)
 
     #at this state, we know the current consumption of the system, and the production of the system.
-    print("!!! CURRENT SYSTEM STATE!!!")
+    print("\n!!! CURRENT SYSTEM STATE!!!\n")
     powerBox.print_readout()
     print("\n") #for prettier printing of following processes
 
@@ -205,13 +206,16 @@ while isRunning:
         #after all priority 1 devices have been turned off, we then begin to consider priority 2 devices.
         #we will do this up to priority 5.
 
+        activatedcounter = 0 #number of devices we do an action on (disable/enable)
+
         for priority in range(1, 6): #6 and not 5 because of how range works
             print(f"Considering priority {priority} devices for turning off:")
             for device in deviceSystem.get_devices():
                 if ( int(device.priority) == priority ) and ( powerBox.get_status() == "defecit" ): #check if we are considering devices of this priority, and if we are currently in a defecit
                     if device.returnState() is True: #if device is already on
-                        print(f"Turning off {device.name} with a consumption of {device.returnConsumption()}! Priority: {device.priority}")
+                        print(f"Turning off {device.name} with a consumption of {device.returnConsumption()}! Priority: {device.priority}, Typical Expected Consumption: {device.typicalconsumption}\n")
                         device.turnOff()
+                        activatedcounter += 1
 
                         #updating consumption of the virtual powerbox
                         #again this wouldnt be needed for a real powerbox.
@@ -219,29 +223,31 @@ while isRunning:
 
                         print(f"New defecit: {powerBox.get_powerDifference()}\n")
 
-        print("\nDefecit has been minimized as best we can!")
+        print(f"\nOut of {numOfDevices} devices, {activatedcounter} were turned <<OFF>> this polling cycle! The defecit should be minimized now.")
         powerBox.print_readout()
 
     #if we are not in a defecit, turn on some devices as long as it wont result in a defecit
     #priority 5 devices we will try to turn on first
     #this is basically the same thing as above but in reverse
     else:
-        print(f"SURPLUS OF {powerBox.get_powerDifference()}!!! Let's turn some more devices back on now...")
+        activatedcounter = 0
+
+        print(f"SURPLUS OF {powerBox.get_powerDifference()}!!! Let's try turn some more devices back on now...")
         for priority in reversed( range(1, 6) ): #outputs the list [5, 4, 3, 2 , 1] and these are the priorities we check in that order
             print(f"Considering priority {priority} devices for turning on:")
             for device in deviceSystem.get_devices():
                 if ( int(device.priority) == priority ) and ( powerBox.get_status() == "surplus" ): #if we are currently considering devices of this priority and we are in a surplus, proceed
-                    if device.returnState() is False:
-                        print(f"Turning on {device.name} with a current consumption of {device.returnConsumption()}! Priority: {priority}\n")
+                    if (device.returnState() is False) and ( int(device.typicalconsumption) < abs(powerBox.get_powerDifference()) ): #if the device is currently off and we dont expect it to use more power than would put us in defecit, proceed
+                        print(f"Turning on {device.name} with a current consumption of {device.returnConsumption()}! Priority: {priority}, Typical Expected Consumption: {device.typicalconsumption}\n")
                         device.turnOn()
-                        time.sleep(5) #give devices some time to turn on and normalise
+                        activatedcounter += 1
+                        time.sleep(5) #give devices some time to turn on and normalise power draw before updating powerbox consumption
 
                         #updating consumption of the virtual powerbox
                         powerBox.powerConsumption += device.returnConsumption()
                         print(f"New surplus: {powerBox.get_powerDifference()}\n")
 
-        time.sleep(5) #give devices some time to properly turn on and normalise before reporting new power usage info
-        print("\nWe've tried turning on some devices!")
+        print(f"\nOut of {numOfDevices} devices, {activatedcounter} were turned <<ON>> this polling cycle! We should be using our surplus within bounds now.")
         powerBox.print_readout()
 
 
